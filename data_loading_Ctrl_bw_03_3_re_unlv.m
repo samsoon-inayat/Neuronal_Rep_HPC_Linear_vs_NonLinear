@@ -28,7 +28,7 @@ T_C = [T_C];
 T_C1 = reduce_table(T_C,animal_list_control,date_list_control);
 disp('Done');
 %%
-colormaps = load('../../Common/Matlab/colorblind_colormap.mat');
+colormaps = load('../Common/Matlab/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 mData.dcolors = mat2cell(distinguishable_colors(20,'w'),[ones(1,20)]);
