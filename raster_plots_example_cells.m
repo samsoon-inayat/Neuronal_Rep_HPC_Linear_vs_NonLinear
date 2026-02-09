@@ -2,21 +2,21 @@ an = 2; cn = 15;
 plotRasters_simplest(Rs_C{an,cn},find(sel_pop_C{an,cn}))
 %% rasters
 magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[10 3 6.9 4.5],'RowsCols',[3 6],'spaceRowsCols',[0.19 -0.02],'rightUpShifts',[0.02 0.1],'widthHeightAdjustment',[10 -200]);
+ff = makeFigureRowsCols(109,[10 3 6.9 4.5],'RowsCols',[3 6],'spaceRowsCols',[0.19 -0.02],'rightUpShifts',[0.02 0.1],'widthHeightAdjustment',[10 -200]);
 MY = 10; ysp = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'Trial #'};
 stp = 0.6*magfac; widths = (ones(1,18)*0.85)*magfac; gap = 0.2*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 
-zvalth = [1.65 1.65 1.65];
+zvalth = [0.65 0.65 0.65];
 si_cn_ap_H = si_cn_ap(:,[1 3 5 2 4 6]);
 
 
 %  time
 an = 4; 
 condNum = 6;
-mod_cells = propsTDM.newMI.cells_time{4,condNum};
-zvals = propsTDM.newMI.cells_time_zvals{4,condNum};
-zvalsPC = propsTDM.newPC.cells_time_zvals{4,condNum};
+mod_cells = propsT.newPC.cells_time{4,condNum};
+zvals = propsT.newMI.cells_time_zvals{4,condNum};
+zvalsPC = propsT.newPC.cells_time_zvals{4,condNum};
 cellN = find(mod_cells & zvals(:,1) > zvalth(1) & abs(zvalsPC(:,1)) > zvalth(1)); cellN = setdiff(cellN,[58,57,192,7,22,77]);
 zvalsV = zvals(cellN,1); zvalsVPC = zvalsPC(cellN,1);
 si = [Ars_i_T Ars_i_T Ars_i_T Ars_i_T Ars_i_T Ars_i_T];
@@ -93,9 +93,9 @@ end
 
 % dist
 condNum = 5;
-mod_cells = propsTDM.newMI.cells_dist{4,condNum};
-zvals = propsTDM.newMI.cells_dist_zvals{4,condNum};
-zvalsPC = propsTDM.newPC.cells_dist_zvals{4,condNum};
+mod_cells = propsT.newMI.cells_dist{4,condNum};
+zvals = propsT.newMI.cells_dist_zvals{4,condNum};
+zvalsPC = propsT.newPC.cells_dist_zvals{4,condNum};
 cellN = find(mod_cells & zvals(:,2) > zvalth(2) & abs(zvalsPC(:,2)) > zvalth(2)); cellN = setdiff(cellN,[312,201,122]);
 zvalsV = zvals(cellN,2); zvalsVPC = zvalsPC(cellN,2);
 si = [Ar_t_D Ar_i_D ArL_t_D ArL_i_D Ars_t_D Ars_i_D];
@@ -171,9 +171,9 @@ end
 %  time
 an = 4; 
 condNum = 6;
-mod_cells = propsTDM.newPC.cells_speed{4,condNum};
-zvals = propsTDM.newMI.cells_speed_zvals{4,condNum};
-zvalsPC = propsTDM.newPC.cells_speed_zvals{4,condNum};
+mod_cells = propsD.newMI.cells_speed{4,condNum};
+zvals = propsD.newMI.cells_speed_zvals{4,condNum};
+zvalsPC = propsT.newPC.cells_speed_zvals{4,condNum};
 cellN = find(mod_cells & zvals(:,3) > zvalth(3) & abs(zvalsPC(:,3)) > zvalth(3)); cellN = setdiff(cellN,[3,35,22,33,62,68,65]);
 zvalsV = zvals(cellN,3); zvalsVPC = zvalsPC(cellN,3);
 si = [Ars_i_T Ars_i_T Ars_i_T Ars_i_T Ars_i_T Ars_i_T];

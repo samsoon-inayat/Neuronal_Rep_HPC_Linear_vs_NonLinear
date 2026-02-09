@@ -36,7 +36,23 @@ for an = 1:5
         cni = cni + 1;
     end
 end
-
+%%
+cell_popsPC = [];%[propsT.newPC.cells_time propsD.newPC.cells_dist propsT.newPC.cells_speed];
+cell_popsMI = [];%[propsT.newMI.cells_time propsD.newMI.cells_dist propsT.newMI.cells_speed];
+for an = 1:5
+    cni = 1;
+    for cc = 1:6
+        cell_popsPC{an,cni} = propsD.newPC.cells_time{an,cc};
+        cell_popsMI{an,cni} = propsT.newMI.cells_time{an,cc};
+        cni = cni + 1;
+        cell_popsPC{an,cni} = propsT.newPC.cells_dist{an,cc};
+        cell_popsMI{an,cni} = propsD.newMI.cells_dist{an,cc};
+        cni = cni + 1;
+        cell_popsPC{an,cni} = propsD.newPC.cells_speed{an,cc};
+        cell_popsMI{an,cni} = propsT.newMI.cells_speed{an,cc};
+        cni = cni + 1;
+    end
+end
 %%
 clc
 eq = [];
@@ -68,6 +84,28 @@ for an = 1:5
 end
 
 pvals = pvalsPC_a; zvals = zvalsPC_a;
+disp('Done')
+
+
+%%
+MVT = met_valsT; MVD = met_valsD;
+for an = 1:5
+    for cni = 1:size(si_cn_ap,2)
+        cn = si_cn_ap(1,cni); ap = si_cn_ap(2,cni);
+        idx = 3; pvalsPC = [MVD{1}{an,cn,ap}.PC(:,idx) MVT{2}{an,cn,ap}.PC(:,idx) MVD{3}{an,cn,ap}.PC(:,idx)];
+        idx = 3; pvalsMI = [MVD{1}{an,cn,ap}.MI(:,idx) MVT{2}{an,cn,ap}.MI(:,idx) MVD{3}{an,cn,ap}.MI(:,idx)];
+        idvPCM{an,cni} = pvalsPC < 0.05;
+        idvMIM{an,cni} = pvalsMI < 0.05;
+        pvalsPC_aM{an,cni} = pvalsPC;
+        pvalsMI_aM{an,cni} = pvalsMI;
+        idx = 2; zvalsPC = [MVD{1}{an,cn,ap}.PC(:,idx) MVT{2}{an,cn,ap}.PC(:,idx) MVD{3}{an,cn,ap}.PC(:,idx)];
+        idx = 2; zvalsMI = [MVD{1}{an,cn,ap}.MI(:,idx) MVT{2}{an,cn,ap}.MI(:,idx) MVD{3}{an,cn,ap}.MI(:,idx)];
+        zvalsPC_aM{an,cni} = zvalsPC;
+        zvalsMI_aM{an,cni} = zvalsMI;
+    end
+end
+
+pvalsM = pvalsPC_aM; zvalsM = zvalsPC_aM;
 disp('Done')
 
 
@@ -310,19 +348,61 @@ end
     end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map.pdf'),600);
 
-    %%
+
+ %%
+cell_popsPC = [];%[propsT.newPC.cells_time propsD.newPC.cells_dist propsT.newPC.cells_speed];
+cell_popsMI = [];%[propsT.newMI.cells_time propsD.newMI.cells_dist propsT.newMI.cells_speed];
+for an = 1:5
+    cni = 1;
+    for cc = 1:6
+        cell_popsPC{an,cni} = propsT.newPC.cells_time{an,cc};
+        cell_popsMI{an,cni} = propsT.newMI.cells_time{an,cc};
+        cni = cni + 1;
+        cell_popsPC{an,cni} = propsD.newPC.cells_dist{an,cc};
+        cell_popsMI{an,cni} = propsD.newMI.cells_dist{an,cc};
+        cni = cni + 1;
+        cell_popsPC{an,cni} = propsT.newPC.cells_speed{an,cc};
+        cell_popsMI{an,cni} = propsT.newMI.cells_speed{an,cc};
+        cni = cni + 1;
+    end
+end
+
+
+cell_popsPCM = [];%[propsT.newPC.cells_time propsD.newPC.cells_dist propsT.newPC.cells_speed];
+cell_popsMIM = [];%[propsT.newMI.cells_time propsD.newMI.cells_dist propsT.newMI.cells_speed];
+for an = 1:5
+    cni = 1;
+    for cc = 1:6
+        cell_popsPCM{an,cni} = propsD.newPC.cells_time{an,cc};
+        cell_popsMIM{an,cni} = propsD.newMI.cells_time{an,cc};
+        cni = cni + 1;
+        cell_popsPCM{an,cni} = propsT.newPC.cells_dist{an,cc};
+        cell_popsMIM{an,cni} = propsT.newMI.cells_dist{an,cc};
+        cni = cni + 1;
+        cell_popsPCM{an,cni} = propsD.newPC.cells_speed{an,cc};
+        cell_popsMIM{an,cni} = propsD.newMI.cells_speed{an,cc};
+        cni = cni + 1;
+    end
+end
     % === Set metric ===
-idv = idvPC;   % later: idv = idvMI;
+idv = idvMI;
+idvM = idvMIM;% later: idv = idvMI;
+% idv = idvMI;
 
 % Optional nice labels for the 6 cases:
 case_labels = {'C3-AOn','C3-AOff','C4-AOn','C4-AOff','C5-AOn','C5-AOff'};
 
-% Build 18 singular-only populations and compute agreement + clustering
+
+
 [pop, labels18] = build_pop18_singular(idv, case_labels);
-pop.X = cell_popsMI;
+[popM, labels18M] = build_pop18_singularM(idvM, case_labels);
+txl = [labels18 labels18M]; txlO = txl;
+pop.M = 18 + 18;
+pop.X = [cell_popsMI cell_popsMIM];
+% pop.X = [cell_popsMIB cell_popsMI];
 S = pop18_agreement_cluster(pop);
 ord = S.leafOrder;
-% ord = 1:18;
+
 
 % Plot group mean agreement (diag masked), with NaNs as light gray
 A18 = S.J_mean(ord,ord);
@@ -331,8 +411,8 @@ set(hf,'Color','w','Position',[100 100 900 360]);
 subplot(1,2,1);
 h = imagesc(A18, [0 0.3]); axis square; colormap(parula); colorbar
 set(h,'AlphaData',~isnan(A18)); set(gca,'Color',[0.9 0.9 0.9]);
-set(gca,'XTick',1:18,'XTickLabel',labels18(ord),'XTickLabelRotation',45,...
-        'YTick',1:18,'YTickLabel',labels18(ord),'Ydir','normal');
+set(gca,'XTick',1:36,'XTickLabel',txl(ord),'XTickLabelRotation',45,...
+        'YTick',1:36,'YTickLabel',txl(ord),'Ydir','normal');
 title(sprintf('Group mean', S.coph_r));
 
 % Plot SEM
@@ -349,8 +429,8 @@ hf = figure(2000);clf
 set(hf,'Color','w','Position',[100 200 900 260]);
 set(hf,'Units','inches');set(hf,'Position',[1 1 3.5 1.25])
 [Hd,~,~] = dendrogram(S.tree, 0, 'Reorder', ord, 'Orientation', 'top','ColorThreshold',0.96); ha = gca;
-set(Hd,'LineWidth',0.51); xlim([0.5 18.5]);
-set(gca,'XTick',1:18,'XTickLabel',labels18(ord),'XTickLabelRotation',45);
+set(Hd,'LineWidth',0.51); xlim([0.5 36.5]);
+set(gca,'XTick',1:36,'XTickLabel',txl(ord),'XTickLabelRotation',45);
 ylabel('Jaccard Distance'); htit = title(sprintf('Hierarchical clustering (c = %.2f)', S.coph_r)); set(htit,'FontWeight','Normal')
 changePosition(ha,[-0.0061 0 0.06 0])
 format_axes(ha)
